@@ -9,7 +9,7 @@ const RoomRoutes = require('./RoomRoutes')
 
 //Root Route
 Router.get('/', (req, res) => {
-  res.status(200).json({ message: 'Welcome to Ticket Service' })
+  res.status(200).json({ message: 'Welcome to Hotel Booking App' })
 })
 
 //invoke Routes
