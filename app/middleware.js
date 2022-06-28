@@ -5,7 +5,10 @@ const cookieParser = require('cookie-parser')
 
 const middlewares = [
   morgan('dev'),
-  cors(),
+  cors({
+    origin: 'http://localhost:3000',
+    credentials: true,
+  }),
   cookieParser(process.env.COOKIE_SECRET || 'secret', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production' ? true : false,

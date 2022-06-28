@@ -3,8 +3,8 @@ let sgMail = require('@sendgrid/mail')
 
 const sendVerificationMail = async (email, token) => {
   const body = `Please Verify your email by clicking on the link below: <a href="${
-    process.env.ORIGIN || 'http://localhost:5050'
-  }/api/auth/verify?token=${token}&email=${email}" >Verify</a>`
+    process.env.ORIGIN || 'http://localhost:3000'
+  }/verify?token=${token}&email=${email}" >Verify</a>`
   const fakedd = true
   if (process.env.EMAIL_SENDER === 'nodemailer' || fakedd) {
     const transporter = nodemailer.createTransport({

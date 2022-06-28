@@ -4,8 +4,8 @@ let sgMail = require('@sendgrid/mail')
 const sendResetPassword = async (email, token) => {
   const fakedd = true
   const body = `Please reset your password by clicking on the link below: <a href="${
-    process.env.ORIGIN || 'http://localhost:5050'
-  }/api/auth/reset-password?token=${token}&email=${email}" >Reset</a>`
+    process.env.ORIGIN || 'http://localhost:3000'
+  }/reset-password?token=${token}&email=${email}" >Reset</a>`
 
   if (process.env.EMAIL_SENDER === 'nodemailer' || fakedd) {
     const transporter = nodemailer.createTransport({

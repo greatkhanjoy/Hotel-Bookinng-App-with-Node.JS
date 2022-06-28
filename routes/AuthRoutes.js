@@ -8,6 +8,7 @@ const {
   verify,
   forgotPassword,
   resetPassword,
+  resetPasswordCheck,
 } = require('../controllers/AuthController')
 
 Router.post('/login', login)
@@ -16,5 +17,6 @@ Router.get('/logout', logout)
 Router.post('/verify', verify)
 Router.post('/forgot-password', forgotPassword)
 Router.post('/reset-password', resetPassword)
+Router.post('/verify-reset-link', resetPasswordCheck)
 
 module.exports = Router

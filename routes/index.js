@@ -3,6 +3,7 @@ const { health } = require('../controllers')
 const UserRoutes = require('./UserRoutes')
 const HotelRoutes = require('./HotelRoutes')
 const AuthRoutes = require('./AuthRoutes')
+const RoomRoutes = require('./RoomRoutes')
 
 //include routes
 
@@ -15,6 +16,7 @@ Router.get('/', (req, res) => {
 Router.route('/health').get(health)
 Router.use('/api/users', UserRoutes)
 Router.use('/api/hotels', HotelRoutes)
+Router.use('/api/rooms', RoomRoutes)
 Router.use('/api/auth', AuthRoutes)
 
 module.exports = Router

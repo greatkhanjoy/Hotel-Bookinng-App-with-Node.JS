@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/bc8ab6a2-9ad5-45d9-b1f0-45d35e350df7/microsoft.web/sites/subscriptions/bc8ab6a2-9ad5-45d9-b1f0-45d35e350df7/resourceGroups/appsvc_linux_centralus/providers/Microsoft.Web/sites/hotelbook",
+    "appService.deploySubpath": "."
+}

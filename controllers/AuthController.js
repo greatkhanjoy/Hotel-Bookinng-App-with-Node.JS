@@ -18,7 +18,18 @@ const login = async (req, res) => {
   }
   const token = CreateJWT(user)
   attachCookies(res, token)
-  res.status(200).json({ message: 'login success!' })
+  res
+    .status(200)
+    .json({
+      message: 'login success!',
+      user: {
+        token: token,
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    })
 }
 
 const register = async (req, res) => {
@@ -94,12 +105,27 @@ const resetPassword = async (req, res) => {
   if (user.resetPasswordExpires < Date.now()) {
     return res.status(400).json({ message: 'Token expired!' })
   }
-
   user.password = password
   user.resetPasswordToken = null
   user.resetPasswordExpires = null
   await user.save()
   res.status(200).json({ message: 'Password changed!' })
+}
+const resetPasswordCheck = async (req, res) => {
+  const { token, email } = req.body
+
+  if (!token || !email) {
+    return res.status(400).json({ message: 'Invalid request' })
+  }
+  const user = await User.findOne({ email: email, resetPasswordToken: token })
+  if (!user) {
+    return res.status(400).json({ message: 'Invalid request!' })
+  }
+  if (user.resetPasswordExpires < Date.now()) {
+    return res.status(400).json({ message: 'Link expired!' })
+  }
+
+  res.status(200).json({ message: 'Correct!' })
 }
 
 module.exports = {
@@ -109,4 +135,5 @@ module.exports = {
   verify,
   forgotPassword,
   resetPassword,
+  resetPasswordCheck,
 }
