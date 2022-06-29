@@ -23,6 +23,10 @@ const UserSchema = new Schema(
       minlength: [3, 'Email must be at least 3 characters'],
       unique: true,
     },
+    image: {
+      type: String,
+      default: 'https://via.placeholder.com/150',
+    },
     password: {
       type: String,
       required: [true, 'Password is required'],

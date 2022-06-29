@@ -2,6 +2,7 @@ const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
+const fileUpload = require('express-fileupload')
 
 const middlewares = [
   morgan('dev'),
@@ -17,6 +18,7 @@ const middlewares = [
   }),
   express.json(),
   express.urlencoded({ extended: true }),
+  fileUpload({ useTempFiles: true }),
 ]
 
 module.exports = middlewares

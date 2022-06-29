@@ -1,7 +1,53 @@
 const Hotel = require('../models/Hotel')
+const {
+  validateImageType,
+  validateImageSize,
+  getImageName,
+} = require('../utill')
+const path = require('path')
 
 const createHotel = async (req, res) => {
+  if (req.files) {
+    if (process.env.IMAGE_STORAGE === 'cloudinary') {
+      const result = await cloudinary.uploader.upload(
+        req.files.featuredImage.tempFilePath,
+        {
+          folder: 'hotel-images',
+          use_filename: true,
+        }
+      )
+      req.body.featuredImage = result.secure_url
+      fs.unlinkSync(req.files.image.tempFilePath)
+    } else {
+      let productImage = req.files.featuredImage
+      const imageName = getImageName(productImage)
+      const imageType = validateImageType(productImage)
+      const imageSize = validateImageSize(productImage, 1000000)
+      if (!imageType) {
+        return res
+          .status(400)
+          .json({ msg: 'Image type must be jpeg, png, jpg, or gif! ' })
+      }
+      if (!imageSize) {
+        return res
+          .status(400)
+          .json({ msg: 'Image size must be less than 1MB! ' })
+      }
+
+      const imagePath = path.join(
+        __dirname,
+        '../public/uploads/' + `${imageName}`
+      )
+      req.body.featuredImage = '/uploads/' + `${imageName}`
+      await productImage.mv(imagePath)
+    }
+  }
+
   const hotel = await Hotel.create(req.body)
+  // if (req.files) {
+  //   hotel.photos.push(req.body.image)
+  //   await hotel.save()
+  // }
   res.status(201).json({ message: 'Hotel created successfully', hotel })
 }
 
@@ -19,6 +65,42 @@ const getSingleHotel = async (req, res) => {
 }
 
 const updateHotel = async (req, res) => {
+  if (req.files) {
+    if (process.env.IMAGE_STORAGE === 'cloudinary') {
+      const result = await cloudinary.uploader.upload(
+        req.files.featuredImage.tempFilePath,
+        {
+          folder: 'hotel-images',
+          use_filename: true,
+        }
+      )
+      req.body.featuredImage = result.secure_url
+      fs.unlinkSync(req.files.image.tempFilePath)
+    } else {
+      let productImage = req.files.featuredImage
+      const imageName = getImageName(productImage)
+      const imageType = validateImageType(productImage)
+      const imageSize = validateImageSize(productImage, 1000000)
+      if (!imageType) {
+        return res
+          .status(400)
+          .json({ msg: 'Image type must be jpeg, png, jpg, or gif! ' })
+      }
+      if (!imageSize) {
+        return res
+          .status(400)
+          .json({ msg: 'Image size must be less than 1MB! ' })
+      }
+
+      const imagePath = path.join(
+        __dirname,
+        '../public/uploads/' + `${imageName}`
+      )
+      req.body.featuredImage = '/uploads/' + `${imageName}`
+      await productImage.mv(imagePath)
+    }
+  }
+
   const hotel = await Hotel.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,

@@ -20,6 +20,11 @@ const RoomSchema = new Schema(
       type: String,
       required: [true, 'Description is required'],
     },
+    image: {
+      type: String,
+      required: [true, 'Image is required'],
+      default: 'https://via.placeholder.com/150',
+    },
     roomNumbers: [
       {
         number: Number,

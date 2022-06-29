@@ -5,7 +5,11 @@ const {
   createTokenUser,
 } = require('./jwt')
 const { checkPermission, isAdmin } = require('./checkPermission')
-const { validateImageType, validateImageSize } = require('./imageValidator')
+const {
+  validateImageType,
+  validateImageSize,
+  getImageName,
+} = require('./imageValidator')
 
 module.exports = {
   CreateJWT,
@@ -16,4 +20,5 @@ module.exports = {
   isAdmin,
   validateImageType,
   validateImageSize,
+  getImageName,
 }

@@ -11,9 +11,10 @@ const connectDB = require('../db/connect')
 
 // invoke middleware
 app.use(middlewares)
+app.set('trust proxy', 1)
 
 //Invoke Routers
-
+app.use(express.static('public'))
 app.use('/', Router)
 
 //invoke after middlewares & handler

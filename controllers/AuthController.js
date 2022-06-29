@@ -18,26 +18,21 @@ const login = async (req, res) => {
   }
   const token = CreateJWT(user)
   attachCookies(res, token)
-  res
-    .status(200)
-    .json({
-      message: 'login success!',
-      user: {
-        token: token,
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      },
-    })
+  res.status(200).json({
+    message: 'login success!',
+    user: {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    },
+  })
 }
 
 const register = async (req, res) => {
   const { name, username, email, password } = req.body
   if (!name || !username || !email || !password) {
-    return res
-      .status(400)
-      .json({ message: 'Name, Username, Email and Password requried' })
+    return res.status(400).json({ message: 'All fields are required!' })
   }
   const verificationToken = crypto.randomBytes(40).toString('hex')
   const user = await User.create({

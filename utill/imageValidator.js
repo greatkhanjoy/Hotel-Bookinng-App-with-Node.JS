@@ -21,4 +21,11 @@ const validateImageSize = (image, size) => {
   return true
 }
 
-module.exports = { validateImageType, validateImageSize }
+const getImageName = (image) => {
+  let randomNM = Math.floor(Math.random() * (99999 - 100 + 1)) + 100
+  let splitImageName = image.name.split('.')
+  let imageName = splitImageName[0] + '-' + randomNM + '.' + splitImageName[1]
+  return imageName
+}
+
+module.exports = { validateImageType, validateImageSize, getImageName }

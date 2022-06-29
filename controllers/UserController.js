@@ -3,12 +3,67 @@ const bcrypt = require('bcryptjs')
 const crypto = require('crypto')
 const { sendVerificationMail } = require('../utill/email')
 const { checkPermission, isAdmin } = require('../utill')
+const {
+  validateImageType,
+  validateImageSize,
+  getImageName,
+} = require('../utill')
+const path = require('path')
 
 const createUser = async (req, res) => {
-  let { name, username, email, password } = req.body
+  let { name, username, email, password, image, role } = req.body
   const verificationToken = crypto.randomBytes(40).toString('hex')
 
-  const user = new User({ name, username, email, password, verificationToken })
+  if (req.files) {
+    if (process.env.IMAGE_STORAGE === 'cloudinary') {
+      const result = await cloudinary.uploader.upload(
+        req.files.image.tempFilePath,
+        {
+          folder: 'hotel-images',
+          use_filename: true,
+        }
+      )
+      image = result.secure_url
+      fs.unlinkSync(req.files.image.tempFilePath)
+    } else {
+      let productImage = req.files.image
+      const imageName = getImageName(productImage)
+      const imageType = validateImageType(productImage)
+      const imageSize = validateImageSize(productImage, 1000000)
+      if (!imageType) {
+        return res
+          .status(400)
+          .json({ msg: 'Image type must be jpeg, png, jpg, or gif! ' })
+      }
+      if (!imageSize) {
+        return res
+          .status(400)
+          .json({ msg: 'Image size must be less than 1MB! ' })
+      }
+
+      const imagePath = path.join(
+        __dirname,
+        '../public/uploads/' + `${imageName}`
+      )
+      image = '/uploads/' + `${imageName}`
+      await productImage.mv(imagePath)
+    }
+  }
+
+  if (req.user.role === 'admin') {
+    role = role ? role : 'user'
+  } else {
+    role = 'user'
+  }
+  const user = new User({
+    name,
+    username,
+    email,
+    password,
+    verificationToken,
+    image,
+    role,
+  })
   await user.save()
   const userData = {
     _id: user._id,
@@ -16,6 +71,7 @@ const createUser = async (req, res) => {
     username: user.username,
     email: user.email,
     role: user.role,
+    image: user.image,
   }
   sendVerificationMail(user.email, user.verificationToken)
   res.status(201).json({ message: 'User created successfully', userData })
@@ -72,6 +128,41 @@ const updateUser = async (req, res) => {
     resetPasswordExpires = resetPasswordExpires
       ? resetPasswordExpires
       : user.resetPasswordExpires
+  }
+  if (req.files) {
+    if (process.env.IMAGE_STORAGE === 'cloudinary') {
+      const result = await cloudinary.uploader.upload(
+        req.files.image.tempFilePath,
+        {
+          folder: 'hotel-images',
+          use_filename: true,
+        }
+      )
+      data.image = result.secure_url
+      fs.unlinkSync(req.files.image.tempFilePath)
+    } else {
+      let productImage = req.files.image
+      const imageName = getImageName(productImage)
+      const imageType = validateImageType(productImage)
+      const imageSize = validateImageSize(productImage, 1000000)
+      if (!imageType) {
+        return res
+          .status(400)
+          .json({ msg: 'Image type must be jpeg, png, jpg, or gif! ' })
+      }
+      if (!imageSize) {
+        return res
+          .status(400)
+          .json({ msg: 'Image size must be less than 1MB! ' })
+      }
+
+      const imagePath = path.join(
+        __dirname,
+        '../public/uploads/' + `${imageName}`
+      )
+      data.image = '/uploads/' + `${imageName}`
+      await productImage.mv(imagePath)
+    }
   }
 
   const updateUser = await User.findByIdAndUpdate(

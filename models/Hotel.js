@@ -26,6 +26,11 @@ const HotelSchema = new Schema(
       required: [true, 'Hotel distance is required'],
       default: 0,
     },
+    featuredImage: {
+      type: String,
+      required: [true, 'Hotel Featured image required'],
+      default: 'https://via.placeholder.com/150',
+    },
     photos: {
       type: [String],
       required: [true, 'Hotel photos are required'],
