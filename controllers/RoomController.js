@@ -124,4 +124,19 @@ const deleteRoom = async (req, res) => {
   res.status(200).json({ message: 'success' })
 }
 
-module.exports = { createRoom, getRooms, getSingleRoom, updateRoom, deleteRoom }
+const reserveRoom = async (req, res) => {
+  await Room.updateOne(
+    { 'roomNumbers._id': req.params.id },
+    { $push: { 'roomNumbers.$.unAvailableDates': req.body.dates } }
+  )
+  res.status(200).json({ message: 'success' })
+}
+
+module.exports = {
+  createRoom,
+  getRooms,
+  getSingleRoom,
+  updateRoom,
+  deleteRoom,
+  reserveRoom,
+}

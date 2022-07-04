@@ -1,4 +1,5 @@
 const Hotel = require('../models/Hotel')
+const Room = require('../models/Room')
 const {
   validateImageType,
   validateImageSize,
@@ -53,7 +54,9 @@ const createHotel = async (req, res) => {
 
 const getHotels = async (req, res) => {
   const hotels = await Hotel.find()
-  res.status(200).json({ message: 'Success', count: hotels.length, hotels })
+  res
+    .status(200)
+    .json({ message: 'Success', count: hotels.length, items: hotels })
 }
 
 const getSingleHotel = async (req, res) => {
@@ -61,7 +64,13 @@ const getSingleHotel = async (req, res) => {
   if (!hotel) {
     return res.status(404).json({ message: 'Hotel not found' })
   }
-  res.status(200).json({ message: 'Success', hotel })
+  const list = await Promise.all(
+    hotel.rooms.map((room) => {
+      return Room.findById(room)
+    })
+  )
+
+  res.status(200).json({ message: 'Success', rooms: list, hotel })
 }
 
 const updateHotel = async (req, res) => {
@@ -119,10 +128,41 @@ const deleteHotel = async (req, res) => {
   res.status(200).json({ message: 'Success', hotel })
 }
 
+const searchHotel = async (req, res) => {
+  let { city, minprice, maxprice } = req.query
+  minprice = minprice ? parseInt(minprice) : 0
+  maxprice = maxprice ? parseInt(maxprice) : 100000
+
+  if (city) {
+    const hotels = await Hotel.find({
+      city: { $regex: city, $options: 'i' },
+      cheapestPrice: { $gte: minprice, $lte: maxprice },
+    })
+    return res
+      .status(200)
+      .json({ message: 'Success', count: hotels.length, items: hotels })
+  }
+  const hotels = await Hotel.find({
+    cheapestPrice: { $gte: minprice, $lte: maxprice },
+  })
+  res
+    .status(200)
+    .json({ message: 'Success', count: hotels.length, items: hotels })
+}
+
+const getCity = async (req, res) => {
+  const hotels = await Hotel.find({})
+  const cities = hotels.map((hotel) => hotel.city)
+  const uniqueCities = [...new Set(cities)]
+  res.status(200).json({ message: 'Success', cities, uniqueCities })
+}
+
 module.exports = {
   createHotel,
   getHotels,
   getSingleHotel,
   updateHotel,
   deleteHotel,
+  searchHotel,
+  getCity,
 }

@@ -13,9 +13,13 @@ const {
   getSingleHotel,
   updateHotel,
   deleteHotel,
+  searchHotel,
+  getCity,
 } = require('../controllers/HotelController')
 
 loggedin, Router.route('/').get(getHotels).post(loggedin, admin, createHotel)
+Router.route('/search').get(searchHotel)
+Router.route('/city').get(getCity)
 Router.route('/:id')
   .get(getSingleHotel)
   .put(loggedin, admin, updateHotel)
